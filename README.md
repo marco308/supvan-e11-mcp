@@ -1,3 +1,10 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/logo/labels-mark-cream.svg">
+    <img src="assets/logo/labels-mark-ink.svg" width="112" height="112" alt="supvan-e11-mcp mark: a freezer label with a QR code, drawn as a half section">
+  </picture>
+</p>
+
 # supvan-e11-mcp
 
 Print labels on a SUPVAN E11 Bluetooth label maker without the phone app:
