@@ -1,0 +1,37 @@
+# Label service on the Bluetooth host. Plain Compose rather than a Swarm stack: it needs
+# AppArmor relaxed to reach BlueZ over D-Bus (Docker's default profile blocks
+# it, and Swarm services can't set security_opt).
+#
+# deploy/deploy.sh brings this up and the HTTPS front door (stack.yml).
+name: labels
+
+services:
+  label-service:
+    image: ${LABEL_IMAGE:-ghcr.io/marco308/supvan-e11-mcp}:${IMAGE_TAG:-latest}
+    container_name: label-service
+    restart: unless-stopped
+    security_opt:
+      - apparmor:unconfined
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    volumes:
+      # BlueZ is reached over the host's system D-Bus.
+      - /run/dbus:/run/dbus:ro
+      # Client token hashes (deploy/tokens.py). The directory is mounted so
+      # atomic rewrites of clients.json show up without a restart.
+      - ./secrets:/run/secrets:ro
+    environment:
+      LABEL_CLIENTS_FILE: /run/secrets/clients.json
+      SUPVAN_LOCAL_ADAPTERS: "1"
+      # Comma-separated ESPHome Bluetooth proxies, "host|api_encryption_key".
+      SUPVAN_PROXIES: ${SUPVAN_PROXIES:-}
+    networks:
+      - traefik-public
+    ports:
+      # For LAN/VPN clients that skip Traefik: http://<this host>:8799
+      - "8799:8000"
+
+networks:
+  traefik-public:
+    external: true

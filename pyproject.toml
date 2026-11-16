@@ -1,0 +1,43 @@
+[project]
+name = "supvan-e11-mcp"
+version = "0.1.0"
+description = "Label service, MCP server and CLI for the SUPVAN E11 Bluetooth label printer"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE", "src/supvan_e11_mcp/fonts/DejaVu-LICENSE"]
+authors = [
+    { name = "marco308" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "bleak>=3.0.2",
+    "mcp[cli]>=2.2.0",
+    "pillow>=13.0.0",
+    "qrcode>=8.2",
+]
+
+[build-system]
+requires = ["uv_build>=0.9.26,<0.14.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
+
+[project.scripts]
+supvan-e11 = "supvan_e11_mcp.cli:main"
+supvan-e11-mcp = "supvan_e11_mcp.server:main"
+label-service = "supvan_e11_mcp.service:main"
+
+[project.optional-dependencies]
+homelab = [
+    "bleak-esphome>=4.1.0",
+    "habluetooth>=7.1.2",
+    "uvicorn>=0.54.0",
+]
+
+[tool.uv]
+# cryptography >= 49 ships no Intel-macOS wheels, so locking that platform
+# pins it to a vulnerable 48.x. Nothing runs this on Intel Macs.
+environments = ["sys_platform != 'darwin' or platform_machine != 'x86_64'"]
