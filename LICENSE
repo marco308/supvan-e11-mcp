@@ -2,12 +2,7 @@ MIT License
 
 Copyright (c) 2026 marco308
 
-The wire protocol in src/supvan_e11_mcp/protocol.py and the print flow in
-src/supvan_e11_mcp/printer.py are ported from supvan-cups
-(https://github.com/heeen/supvan-cups and its E11 fork
-https://github.com/efcroasdell/supvan-cups), which is:
-
-Copyright (c) 2026 Florian Hänel
+Copyright (c) 2026 Florian Hänel (supvan-cups, which protocol.py and printer.py are ported from)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +21,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-The bundled DejaVu fonts (src/supvan_e11_mcp/fonts/) have their own licence:
-see src/supvan_e11_mcp/fonts/DejaVu-LICENSE.

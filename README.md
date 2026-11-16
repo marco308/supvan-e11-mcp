@@ -154,5 +154,7 @@ The protocol comes from [heeen/supvan-cups](https://github.com/heeen/supvan-cups
 
 ## Licence
 
-MIT, see [LICENSE](LICENSE). The bundled DejaVu fonts carry their own licence
+MIT, see [LICENSE](LICENSE). It carries Florian Hänel's copyright notice too,
+because `protocol.py` and `printer.py` are ported from his MIT-licensed
+supvan-cups. The bundled DejaVu fonts have their own licence
 (`src/supvan_e11_mcp/fonts/DejaVu-LICENSE`).
