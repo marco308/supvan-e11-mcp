@@ -1,5 +1,12 @@
 # Homelab label service (service.py). Needs the host's D-Bus socket for BlueZ.
-FROM python:3.12-slim
+FROM python:3.13-slim
+
+# Take Debian security fixes newer than the base image, and drop the bundled
+# pip: uv installs everything, so pip is only an unused attack surface.
+RUN apt-get update \
+ && apt-get upgrade -y --no-install-recommends \
+ && rm -rf /var/lib/apt/lists/* \
+ && pip uninstall -y pip
 
 COPY --from=ghcr.io/astral-sh/uv:0.13 /uv /usr/local/bin/uv
 ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy PYTHONUNBUFFERED=1
