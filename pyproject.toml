@@ -23,6 +23,8 @@ build-backend = "uv_build"
 [dependency-groups]
 dev = [
     "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.17.5",
 ]
 
 [project.scripts]
@@ -41,3 +43,34 @@ homelab = [
 # cryptography >= 49 ships no Intel-macOS wheels, so locking that platform
 # pins it to a vulnerable 48.x. Nothing runs this on Intel Macs.
 environments = ["sys_platform != 'darwin' or platform_machine != 'x86_64'"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.coverage.run]
+source = ["supvan_e11_mcp"]
+branch = true
+
+[tool.coverage.report]
+# A floor, not a target: the Bluetooth paths (printer, hub, daemon) need a
+# real printer and stay untested. Raise this as coverage grows.
+fail_under = 50
+show_missing = true
+skip_covered = true
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+# pyflakes, import order, pyupgrade, bugbear and the bandit security rules.
+select = ["E4", "E7", "E9", "F", "I", "UP", "B", "S"]
+ignore = [
+    "S101",  # asserts state internal invariants
+    "S104",  # the service binds 0.0.0.0 on purpose: it runs in a container behind a proxy
+    "S110",  # best-effort Bluetooth disconnects swallow errors deliberately
+    "S603",  # the one subprocess call runs macOS `open` on a fixed path
+    "S607",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101", "S105", "S106"]

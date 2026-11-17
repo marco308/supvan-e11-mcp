@@ -50,7 +50,8 @@ def test_store_lookup_and_reload(tmp_path):
     store = ClientStore(p)
     assert store.lookup("tok-meals-xxxxxxxxxxxxxxxx") == "meals"
     assert store.lookup("nope") is None
-    import os, time
+    import os
+    import time
     _store(tmp_path, claude="tok-claude-xxxxxxxxxxxxxxx")
     os.utime(p, (time.time() + 5, time.time() + 5))
     assert store.lookup("tok-meals-xxxxxxxxxxxxxxxx") is None

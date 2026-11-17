@@ -40,7 +40,7 @@ class PrinterError(Exception):
 
 
 def looks_like_printer(name: str | None, service_uuids: list[str]) -> bool:
-    if any(s.lower() in (l[0] for l in GATT_LAYOUTS) for s in service_uuids):
+    if any(s.lower() in (layout[0] for layout in GATT_LAYOUTS) for s in service_uuids):
         return True
     return bool(name) and name.upper().startswith(NAME_PREFIXES)
 
@@ -74,7 +74,7 @@ async def _establish(device: BLEDevice):
                 last = e
                 log.warning("connect attempt %d failed: %s", attempt + 1, e)
                 await asyncio.sleep(0.5)
-        raise last  # type: ignore[misc]
+        raise last  # type: ignore[misc]  # noqa: B904
     return await establish_connection(bleak.BleakClient, device, device.name or device.address, max_attempts=4)
 
 
@@ -111,7 +111,7 @@ class Printer:
     # --- connection ---------------------------------------------------------
 
     @classmethod
-    async def connect(cls, address: str | None = None, locate: Locator | None = None) -> "Printer":
+    async def connect(cls, address: str | None = None, locate: Locator | None = None) -> Printer:
         device = await (locate or scan_locate)(address)
         if device is None:
             raise PrinterError(
@@ -147,7 +147,7 @@ class Printer:
         except Exception:  # noqa: BLE001
             pass
 
-    async def __aenter__(self) -> "Printer":
+    async def __aenter__(self) -> Printer:
         return self
 
     async def __aexit__(self, *exc) -> None:
