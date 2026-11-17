@@ -46,15 +46,64 @@ def test_rest_print_is_attributed_and_limited(client):
     assert r.status_code == 429 and "quota" in r.json()["error"]
 
 
-def test_mcp_tool_call_carries_client(client):
-    c, printed = client
-    call = {
-        "jsonrpc": "2.0", "id": 1, "method": "tools/call",
-        "params": {"name": "print_freezer_label", "arguments": {"dish": "Stew", "copies": 2}},
-    }
-    r = c.post("/mcp", json=call, headers={**AUTH, "Accept": "application/json, text/event-stream"})
+MCP_HEADERS = {**AUTH, "Accept": "application/json, text/event-stream"}
+
+
+def call(c, name, arguments, headers=MCP_HEADERS):
+    body = {"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {"name": name, "arguments": arguments}}
+    r = c.post("/mcp", json=body, headers=headers)
     assert r.status_code == 200, r.text
+    return r.json()["result"]
+
+
+def preview_id(result):
+    text = next(b["text"] for b in result["content"] if b["type"] == "text")
+    return text.split()[1]
+
+
+def test_mcp_preview_returns_picture_and_id(client):
+    c, printed = client
+    result = call(c, "preview_label", {"text": "M3x8"})
+    assert [b["type"] for b in result["content"]] == ["image", "text"]
+    assert preview_id(result) and printed == []
+
+
+def test_mcp_prints_a_preview_once_with_copies(client):
+    c, printed = client
+    pid = preview_id(call(c, "preview_freezer_label", {"dish": "Stew"}))
+    assert not call(c, "print_label", {"preview_id": pid, "copies": 2})["isError"]
     assert printed == ["meals", "meals"]
+    again = call(c, "print_label", {"preview_id": pid})
+    assert again["isError"] and "already been printed" in again["content"][0]["text"]
+    assert printed == ["meals", "meals"]
+
+
+def test_mcp_print_without_a_preview_prints_nothing(client):
+    c, printed = client
+    for args in ({}, {"preview_id": ""}, {"preview_id": "made-up"}):
+        assert call(c, "print_label", args)["isError"]
+    assert call(c, "print_label", {"text": "M3x8"})["isError"]  # the old way: refused, not printed
+    assert printed == []
+
+
+def test_mcp_preview_belongs_to_its_client(client, tmp_path, monkeypatch):
+    c, printed = client
+    pid = preview_id(call(c, "preview_label", {"text": "M3x8"}))
+    other = "other-token-xxxxxxxxxxxxxxxxx"
+    p = tmp_path / "clients.json"
+    data = json.loads(p.read_text())
+    data["clients"]["other"] = {"sha256": hash_token(other)}
+    p.write_text(json.dumps(data))
+    result = call(c, "print_label", {"preview_id": pid}, {**MCP_HEADERS, "Authorization": f"Bearer {other}"})
+    assert result["isError"] and printed == []
+
+
+def test_mcp_bad_arguments_dont_spend_the_preview(client):
+    c, printed = client
+    pid = preview_id(call(c, "preview_label", {"text": "M3x8"}))
+    assert call(c, "print_label", {"preview_id": pid, "copies": 99})["isError"]
+    assert not call(c, "print_label", {"preview_id": pid})["isError"]
+    assert printed == ["meals"]
 
 
 def test_mcp_tool_failure_explains_why(client, monkeypatch):
@@ -64,14 +113,12 @@ def test_mcp_tool_failure_explains_why(client, monkeypatch):
         raise service.PrinterError("The printer stayed busy.")
 
     monkeypatch.setattr(service.HubBackend, "print_raster", busy)
-    call = {
-        "jsonrpc": "2.0", "id": 1, "method": "tools/call",
-        "params": {"name": "print_label", "arguments": {"text": "M3x8"}},
-    }
-    r = c.post("/mcp", json=call, headers={**AUTH, "Accept": "application/json, text/event-stream"})
-    result = r.json()["result"]
+    pid = preview_id(call(c, "preview_label", {"text": "M3x8"}))
+    result = call(c, "print_label", {"preview_id": pid})
     assert result["isError"]
     assert result["content"][0]["text"].endswith("Printed 0 of 1; then: The printer stayed busy.")
+    retry = call(c, "print_label", {"preview_id": pid})  # it may have printed: never again by id
+    assert retry["isError"] and "already been printed" in retry["content"][0]["text"]
 
 
 def test_health_is_open_but_says_nothing_about_the_printer(client):

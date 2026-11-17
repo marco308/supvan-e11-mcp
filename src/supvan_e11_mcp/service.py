@@ -123,7 +123,7 @@ def create_app() -> Starlette:
             raise RateLimited(f"label quota reached for {client}; try again in {int(wait) + 1} s", wait)
 
     labels.quota = label_quota
-    mcp = build_server(labels)
+    mcp = build_server(labels, who=current_client.get)
     mcp_app = mcp.streamable_http_app(
         stateless_http=True,
         json_response=True,

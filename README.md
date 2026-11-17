@@ -122,15 +122,22 @@ The bridge logs to `~/Library/Logs/label-printer-bridge.log`. Set
 | Tool | What it does |
 |---|---|
 | `printer_status` | Model, loaded tape (width, label length, labels left), problems |
-| `preview_label` | Picture of a text label, nothing printed |
-| `print_label` | Print it (`copies`, `density`) |
-| `preview_freezer_label` / `print_freezer_label` | Freezer template |
+| `preview_label` | Picture of a text label and a `preview_id`, nothing printed |
+| `preview_freezer_label` | The same for the freezer template |
+| `print_label` | Print a preview by its `preview_id` (`copies`, `density`) |
 | `feed_tape` | Feed one blank label |
 | `release_printer` | Drop Bluetooth so the phone app can connect |
 
 Labels take `text` (`\n` for a second line), `length_mm` (defaults to the loaded
 label), `font` (sans-bold, sans, condensed-bold, condensed, serif, mono; bundled DejaVu), `size`, `align`, `qr`,
 `border` and `invert`.
+
+**Printing needs a preview.** `print_label` takes the `preview_id` a preview returned and
+prints exactly that picture, so an agent can't print a label nobody was shown. Each preview
+prints once (`copies` sets how many) and lasts 10 minutes, and only the client that made it
+can print it, so a retry or a second turn after a dropped link can't print the same label
+twice. This is MCP only: the REST API's `POST /api/labels/print` still prints in one call,
+because an app's print button is already a person choosing one label.
 
 ## CLI
 
