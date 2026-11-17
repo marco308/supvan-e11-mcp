@@ -7,6 +7,9 @@
 
 # supvan-e11-mcp
 
+[![CI](https://github.com/marco308/supvan-e11-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/marco308/supvan-e11-mcp/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/marco308/supvan-e11-mcp/graph/badge.svg)](https://codecov.io/gh/marco308/supvan-e11-mcp)
+
 Print labels on a SUPVAN E11 Bluetooth label maker without the phone app:
 from Claude on a Mac (local MCP server), from the command line, or from a
 small label service on a home server (REST API + remote MCP) that other apps

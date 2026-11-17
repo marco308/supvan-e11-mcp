@@ -34,7 +34,14 @@ from starlette.routing import Mount, Route
 from .bridge import Bridge
 from .hub import Hub
 from .printer import PrinterError
-from .security import ClientStore, Limiter, RateLimited, client_ip, current_client, default_clients_path
+from .security import (
+    ClientStore,
+    Limiter,
+    RateLimited,
+    client_ip,
+    current_client,
+    default_clients_path,
+)
 from .tools import Labels, build_server, png
 
 log = logging.getLogger("service")

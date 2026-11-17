@@ -9,6 +9,7 @@ from PIL import Image
 from . import protocol as P
 from . import render
 
+
 def _date(value: str | dt.date | None, default: dt.date) -> dt.date:
     if value is None or value == "":
         return default

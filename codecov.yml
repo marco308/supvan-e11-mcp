@@ -1,0 +1,13 @@
+# Coverage is informational: report on pull requests, never fail them.
+# The hard floor lives in pyproject.toml (tool.coverage.report.fail_under).
+coverage:
+  status:
+    project:
+      default:
+        informational: true
+    patch:
+      default:
+        informational: true
+comment:
+  layout: "condensed_header, diff, files"
+  require_changes: true

@@ -5,3 +5,6 @@ __pycache__/
 deploy/label_api_token
 deploy/secrets/
 deploy/.env
+.coverage
+.ruff_cache/
+coverage.xml
