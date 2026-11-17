@@ -8,3 +8,4 @@ deploy/.env
 .coverage
 .ruff_cache/
 coverage.xml
+junit.xml
