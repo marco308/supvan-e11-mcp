@@ -19,7 +19,7 @@ configs:
 
 services:
   proxy:
-    image: nginx:1.29-alpine
+    image: nginx:1.30-alpine
     networks:
       - traefik-public
     configs:
