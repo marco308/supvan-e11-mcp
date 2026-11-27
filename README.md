@@ -95,7 +95,8 @@ own HTTPS proxy in front of it.
 
 **Adding a room:** flash an ESP32 with ESPHome's Bluetooth proxy firmware
 (`bluetooth_proxy: active: true`), then add `host|api_encryption_key` to
-`SUPVAN_PROXIES` in `deploy/.env` and re-run `deploy/deploy.sh`.
+`SUPVAN_PROXIES` in `deploy/.env`, inside double quotes (bash reads a bare `|`
+as a pipe), and re-run `deploy/deploy.sh`.
 
 ## Mac setup (local MCP)
 
